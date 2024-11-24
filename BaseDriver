@@ -43,6 +43,78 @@ def __str__(self):
                 f"Отчество: {self.patronymic}\n"
                 f"Номер ВУ: {self.license_number}")
 
+class Driver(BaseDriver):
+    def __init__(self, driver_id: None, last_name: str, first_name: str, patronymic: str, experience: int,
+                 license_number: str):
+        """
+        Инициализирует объект Driver с заданными параметрами после их валидации.
+        """
+        if not self._validate_driver_id(driver_id):
+            raise ValueError("Неверный ID водителя.")
+        if not self._validate_experience(experience):
+            raise ValueError("Неверный стаж водителя.")
+
+        super().__init__(last_name, first_name, patronymic, license_number)
+
+        self._driver_id = driver_id
+        self._experience = experience
+
+    @property
+    def driver_id(self):
+        return self._driver_id
+
+    @property
+    def experience(self):
+        return self._experience
+
+    @staticmethod
+    def _validate_driver_id(driver_id: int) -> bool:
+        """
+        Проверяет, является ли ID водителя положительным целым числом.
+        """
+        return isinstance(driver_id, int) and driver_id > 0
+
+    @staticmethod
+    def _validate_experience(experience: int) -> bool:
+        """
+        Проверяет стаж: он должен быть положительным числом, не превышающим 100.
+        """
+        return isinstance(experience, int) and 0 <= experience <= 100
+
+    def __str__(self):
+        return (f"Полная информация о водителе:\n"
+                f"ID: {self.driver_id}\n"
+                f"{super().__str__()}\n"
+                f"Стаж: {self.experience} лет")
+
+
+class DriverShort(BaseDriver):
+    def __init__(self, driver: Driver):
+        """
+        Инициализирует объект DriverShort на основе объекта Driver.
+        """
+        super().__init__(driver.last_name, driver.first_name, driver.patronymic, driver.license_number)
+        self.inn = None
+        self.ogrn = None
+
+    def __str__(self):
+        return (f"Краткая информация о водителе:\n"
+                f"Фамилия: {self.last_name}\n"
+                f"Инициалы: {self.initials}\n"
+                f"Номер ВУ: {self.license_number}\n"
+                f"ИНН: {self.inn}\n"
+                f"ОГРН: {self.ogrn}")
+
+    @property
+    def initials(self):
+        return f"{self.first_name[0]}. {self.patronymic[0]}."
+
+    def set_inn(self, inn: str):
+        self.inn = inn
+
+    def set_ogrn(self, ogrn: str):
+        self.ogrn = ogrn
+
 # Пример использования
 if __name__ == "__main__":
     # Попробуем создать водителя с разными данными
