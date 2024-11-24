@@ -26,3 +26,10 @@ class BaseDriver:
     @property
     def license_number(self):
         return self._license_number
+
+@staticmethod
+    def _validate_license_number(license_number: str) -> bool:
+        """
+        Проверяет формат водительского удостоверения: ** ** ****
+        """
+        return bool(re.fullmatch(r"\d{2} \d{2} \d{4}", license_number))
