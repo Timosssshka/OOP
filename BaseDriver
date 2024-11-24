@@ -43,4 +43,23 @@ def __str__(self):
                 f"Отчество: {self.patronymic}\n"
                 f"Номер ВУ: {self.license_number}")
 
+# Пример использования
+if __name__ == "__main__":
+    # Попробуем создать водителя с разными данными
+    valid_driver_id = 1
+    valid_last_name = "Иванов"
+    valid_first_name = "Иван"
+    valid_patronymic = "Иванович"
+    valid_experience = 5
+    valid_license_number = "12 34 5678"
+
+    if Driver._validate_driver_id(valid_driver_id) and \
+            Driver._validate_experience(valid_experience) and \
+            BaseDriver._validate_license_number(valid_license_number):
+        driver = Driver(valid_driver_id, valid_last_name, valid_first_name, valid_patronymic, valid_experience,
+                        valid_license_number)
+        print(driver)
+    else:
+        print("Некорректные данные для водителя.")
+
 
