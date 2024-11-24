@@ -33,3 +33,14 @@ class BaseDriver:
         Проверяет формат водительского удостоверения: ** ** ****
         """
         return bool(re.fullmatch(r"\d{2} \d{2} \d{4}", license_number))
+
+def short_description(self):
+        return f"{self.last_name} {self.first_name[0]}. {self.patronymic[0]}."
+
+def __str__(self):
+        return (f"Фамилия: {self.last_name}\n"
+                f"Имя: {self.first_name}\n"
+                f"Отчество: {self.patronymic}\n"
+                f"Номер ВУ: {self.license_number}")
+
+
