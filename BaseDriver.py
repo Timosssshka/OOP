@@ -1,17 +1,18 @@
 import re
 import json
 
+
 class BaseDriver:
-    def __init__(self, driver_id: int = None, last_name: str, first_name: str, patronymic: str, license_number: str):
+    def __init__(self,  last_name: str, first_name: str, patronymic: str, license_number: str, driver_id: int = None):
         """
         Базовый класс для водителя с общими атрибутами и методами.
         """
-        self.driver_id = driver_id
         self.last_name = last_name
         self.first_name = first_name
         self.patronymic = patronymic
         self.license_number = license_number
-    
+        self.driver_id = driver_id
+
     @property
     def driver_id(self):
         return self.__driver_id
@@ -21,7 +22,7 @@ class BaseDriver:
         if not self.validate_driver_id(value):
             raise ValueError("Некорректный ID водителя.")
         self.__driver_id = value
-   
+
     @property
     def last_name(self):
         return self.__last_name
@@ -79,7 +80,7 @@ class BaseDriver:
         return bool(patronymic and re.match(r"^[a-zA-Zа-яА-ЯёЁ\s-]+$", patronymic))
 
     @staticmethod
-    def _validate_license_number(license_number: str) -> bool:
+    def validate_license_number(license_number: str) -> bool:
         return bool(re.fullmatch(r"\d{2} \d{2} \d{4}", license_number))
 
     @staticmethod
@@ -89,7 +90,7 @@ class BaseDriver:
             raise ValueError("Строка должна содержать 5 элементов, разделённых запятыми.")
         driver_id = int(parts[0].strip())
         first_name, last_name, patronymic, license_number = map(str.strip, parts[1:])
-        return BaseDriver(driver_id, first_name, last_name, patronymic, license_number)
+        return BaseDriver(first_name, last_name, patronymic, license_number,driver_id)
 
     @classmethod
     def from_json(cls, json_str: str):
@@ -101,7 +102,7 @@ class BaseDriver:
             patronymic=data.get('patronymic', ''),
             license_number=data['license_number']
         )
-        
+
     def __eq__(self, other):
         if not isinstance(other, BaseDriver):
             return NotImplemented
@@ -113,15 +114,17 @@ class BaseDriver:
         return f"{self.last_name} {self.first_name[0]}. {self.patronymic[0]}."
 
     def __str__(self):
-        return (f"Фамилия: {self.last_name}\n"
+        return (f"ID: {self.driver_id}\n"
+                f"Фамилия: {self.last_name}\n"
                 f"Имя: {self.first_name}\n"
                 f"Отчество: {self.patronymic}\n"
                 f"Номер ВУ: {self.license_number}")
 
+
 class Driver(BaseDriver):
     def __init__(self, driver_id: None, last_name: str, first_name: str, patronymic: str, experience: int,
                  license_number: str):
-        super().__init__(driver_id, last_name, first_name, patronymic, license_number)
+        super().__init__(last_name, first_name, patronymic, license_number,driver_id)
         self.experience = experience
 
     @property
@@ -189,13 +192,11 @@ if __name__ == "__main__":
     valid_experience = 5
     valid_license_number = "12 34 5678"
 
-    if Driver._validate_driver_id(valid_driver_id) and \
-            Driver._validate_experience(valid_experience) and \
-            BaseDriver._validate_license_number(valid_license_number):
+    if Driver.validate_driver_id(valid_driver_id) and \
+            Driver.validate_experience(valid_experience) and \
+            BaseDriver.validate_license_number(valid_license_number):
         driver = Driver(valid_driver_id, valid_last_name, valid_first_name, valid_patronymic, valid_experience,
                         valid_license_number)
         print(driver)
     else:
         print("Некорректные данные для водителя.")
-
-
