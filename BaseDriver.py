@@ -20,7 +20,7 @@ class BaseDriver:
     def driver_id(self, value: int):
         if not self.validate_driver_id(value):
             raise ValueError("Некорректный ID водителя.")
-        self.__student_id = value
+        self.__driver_id = value
    
     @property
     def last_name(self):
