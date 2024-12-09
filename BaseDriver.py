@@ -99,7 +99,7 @@ class BaseDriver:
             first_name=data['first_name'],
             last_name=data['last_name'],
             patronymic=data.get('patronymic', ''),
-            license_number=data['license_number]
+            license_number=data['license_number']
         )
         
     def __eq__(self, other):
