@@ -3,16 +3,19 @@ import json
 import yaml 
 class DriverRepository(ABC):
     """Базовый класс для репозиториев с общей логикой работы с данными."""
-    def __init__(self):
+    def __init__(self, strategy: DriverStrategy):
         self.drivers = []
-    
-    @abstractmethod
-    def _read_all(self) -> List[Driver]:
-        pass
-      
-    @abstractmethod
-    def _write_all(self):
-        pass
+        self.strategy = strategy
+
+    def read_all(self) -> List[Driver]:
+        """Чтение всех продуктов с использованием стратегии."""
+        data = self.strategy.read()
+        return [Driver.create_from_dict(item) for item in data]
+
+    def write_all(self, drivers: List[Driver]) -> None:
+        """Запись всех продуктов с использованием стратегии."""
+        data = [driver.to_dict() for driver in drivers]
+        self.strategy.write(data)
       
     def get_all(self) -> list:
         """Получить все объекты."""
@@ -30,12 +33,12 @@ class DriverRepository(ABC):
         new_id = max((item.get("id", 0) for item in self.data), default=0) + 1
         driver["id"] = new_id
         self._data.append(driver)
-        self._write_all()
+        self._write_all(self.drivers)
       
     def delete_by_id(self, driver_id: int):
         """Удалить объект по ID."""
         self.data = [driver for driver in self._data if driver.get("id") != driver_id]
-        self._write_all()
+        self._write_all(self.drivers)
       
     def replace_by_id(self, driver_id: int, updates: dict):
         """Заменить объект по ID."""
@@ -43,7 +46,7 @@ class DriverRepository(ABC):
         valid_keys = {"id", "last_name", "first_name", "patronymic", "license_number", "experience"}
         updates = {k: v for k, v in updates.items() if k in valid_keys}
         driver.update(updates)
-        self._write_all()
+        self._write_all(self.drivers)
       
     def get_k_n_short_list(self, k: int, n: int) -> list[DriverShort]:
         """Получить k по счету n объектов."""
