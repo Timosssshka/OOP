@@ -4,20 +4,30 @@ from decimal import Decimal
 from typing import List
 from Driver import Driver
 from DriverRepository import DriverRepository
-class DriverRepYaml(DriverRepository):
-    def __init__(self, filename: str):
-        super().__init__()
-        self.filename = filename
-        self.products = self._read_all()
-    
-    def _read_all(self) -> List[Driver]:
-        try:
-            with open(self.filename, 'r', encoding='utf-8') as file:
-                data = yaml.safe_load(file)
-                return [Driver.create_from_json(json.dumps(driver)) for driver in data]
-        except FileNotFoundError:
-           return []
-            
-    def _write_all(self):
-        with open(self.filename, 'w', encoding='utf-8') as file:
-            yaml.dump([json.loads(driver.to_json()) for driver in self.drivers], file, allow_unicode=True, default_flow_style=False)
+
+class DriverRepYaml(DriverStrategy):
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+
+    def read(self):
+        if not os.path.exists(self.file_path):
+            return []
+        with open(self.file_path, 'r', encoding='utf-8') as file:
+            return yaml.safe_load(file) or []
+
+    def write(self, data):
+        with open(self.file_path, 'w', encoding='utf-8') as file:
+            yaml.dump(data, file, allow_unicode=True, default_flow_style=False)
+
+    def add(self, driver):
+        data = self.read()
+        data.append(driver.to_dict())
+        self.write(data)
+
+    def display(self):
+        data = self.read()
+        for item in data:
+            print(item)
+
+strategy = DriverRepYaml('drivers.yaml')
+strategy.display()
