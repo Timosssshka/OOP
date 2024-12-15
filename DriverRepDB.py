@@ -11,7 +11,7 @@ class DriverRepDB:
             cursor.execute("SELECT * FROM drivers WHERE id = %s", (driver_id,))
             driver = cursor.fetchone()
             if not driver:
-                raise ValueError(f"Водитель с ID {student_id} не найден.")
+                raise ValueError(f"Водитель с ID {driver_id} не найден.")
             return dict(driver)
     
     def get_k_n_short_list(self, k: int, n: int):
@@ -42,7 +42,7 @@ class DriverRepDB:
             raise ValueError("Нет валидных полей для обновления.")
         conn = self.db_connection.get_connection()
         set_clause = ", ".join([f"{key} = %s" for key in updates.keys()])
-        values = list(updates.values()) + [student_id]
+        values = list(updates.values()) + [driver_id]
         
         with conn.cursor() as cursor:
             cursor.execute(f"UPDATE drivers SET {set_clause} WHERE id = %s", values)
