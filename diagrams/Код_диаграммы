@@ -1,0 +1,111 @@
+classDiagram
+    class BaseDriver {
+        -driver_id: int
+        -first_name: str
+        -last_name: str
+        -patronymic: str
+        -license_number: str
+        +validate_driver_id(driver_id: int) bool
+        +validate_first_name(first_name: str) bool
+        +validate_last_name(last_name: str) bool
+        +validate_patronymic(patronymic: str) bool
+        +validate_license_number(license_number: str) bool
+        +to_json() str
+        +to_yaml() str
+        +to_dict() dict
+        +__eq__() bool
+        + __str__() str
+        +short_description() str
+        +create_new_student(cls, ...)
+        +from_string(driver_str: str)
+        +from_json(cls, json_str: str)
+        +create_from_yaml(cls, yaml_string: str)
+        +create_from_dict(cls, data: dict)
+        +
+    }
+
+    class Driver {
+        - int experience
+        + validate_experience(int experience) bool
+        + __str__() str
+    }
+    
+
+    class DriverShort {
+        + from_driver(Driver driver) DriverShort
+        + get_brief_name() str
+        + __str__() str
+    }
+    
+
+    class DriverStrategy {
+        <<abstract>>
+        + read()
+        + write(List~dict~ data)
+        + display()
+    }
+
+    class DriverRepJson {
+        + read()
+        + write(List~dict~ data)
+        + display()   
+    }
+    
+
+    class DriverRepYaml {
+        + read()
+        + write(List~dict~ data)
+        + add(List~dict~ data)
+        + display()
+    }
+    
+
+    class DriverRepository {
+        - DriverStrategy strategy
+        - List~dict~ data
+        + read_all()
+        + write_all()
+        + get_all() list
+        + get_by_id(int driver_id) Driver
+        + add_driver(dict driver)
+        + delete_by_id(int driver_id)
+        + replace_by_id(int driver_id, ...)
+        + get_k_n_short_list(int k, int n) list~DriverShort~
+        + sort_by_field(str field, bool reverse) List~Driver~
+        + get_count() int
+    }
+
+    class Adapter {
+        - DriverRepBase driver_rep_base
+        + get_k_n_short_list(int k, int n)
+        + get_by_id(int driver_id)
+        + delete_by_id(int driver_id)
+        + update_by_id(int driver_id, dict updates)
+        + add(dict driver_id)
+        + get_count() int
+    }
+
+    class DBConnection {
+        - instance : DBConnection
+        - connection
+        + get_connection()
+        + close_connection()
+    }
+
+    class DriverRepDB {
+        - DBConnection db_connection
+        + get_by_id(int driver_id) dict
+        + get_k_n_short_list(int k, int n) list
+        + add_driver(Driver driver) int
+        + replace_by_id(int driver_id, dict updates)
+        + delete_by_id(int driver_id)
+        + get_count() int
+    }
+
+    Driver --|> BaseDriver
+    DriverShort --|> BaseDriver
+    DriverRepJson --> DriverStrategy
+    DriverRepYaml --> DriverStrategy
+    DriverRepository o-- DriverStrategy 
+    Adapter o-- DriverRepository
+    DriverRepDB *-- DBConnection
