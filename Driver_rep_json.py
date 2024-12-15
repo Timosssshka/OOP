@@ -3,18 +3,26 @@ from decimal import Decimal
 from typing import List
 from Driver import Driver
 from DriverRepository import DriverRepository
-class DriverRepJson(DriverRepository):
-    def __init__(self, filename: str):
-        super().__init__()
-        self.filename = filename
-        self.drivers = self._read_all()
-    def _read_all(self) -> List[Driver]:
-        try:
-            with open(self.filename, 'r', encoding='cp1251') as file:
-                data = json.load(file)
-                return [Driver.create_from_json(json.dumps(driver)) for driver in data]
-        except FileNotFoundError:
+from DriverStrategy import DriverStrategy
+
+class DriverRepJson(DriverStrategy):
+     def __init__(self, file_path: str):
+        self.file_path = file_path
+
+    def read(self):
+        if not os.path.exists(self.file_path):
             return []
-    def _write_all(self):
-        with open(self.filename, 'w', encoding='cp1251') as file:
-            json.dump([json.loads(driver.to_json()) for driver in self.drivers], file, ensure_ascii=False, indent=4)
+        with open(self.file_path, 'r', encoding='utf-8') as file:
+            return json.load(file)
+
+    def write(self, data):
+        with open(self.file_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+
+    def display(self):
+        data = self.read()
+        for item in data:
+            print(item)
+
+strategy = DriverRepJson('driver.json')
+json_repository = DriverRepository(strategy)
