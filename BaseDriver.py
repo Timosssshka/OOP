@@ -83,6 +83,11 @@ class BaseDriver:
     def validate_license_number(license_number: str) -> bool:
         return bool(re.fullmatch(r"\d{2} \d{2} \d{4}", license_number))
 
+     @classmethod
+    def create_new_driver(cls, driver_id: Optional[int], first_name: str, last_name: str, patronymic: str, license_number: str):
+        new_driver = cls(driver_id=driver_id, first_name=first_name, last_name=last_name, patronymic=patronymic, license_number=license_number)
+        return new_driver
+        
     @staticmethod
     def from_string(driver_str: str):
         parts = driver_str.split(',')
@@ -103,11 +108,56 @@ class BaseDriver:
             license_number=data['license_number']
         )
 
+    @classmethod
+    def create_from_dict(cls, data: dict):
+        return cls(
+            driver_id=data.get('driver_id'),
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            patronymic=data.get('patronymic', ''),
+            license_number=data['license_number']
+        )
+        
+    def to_json(self) -> str:
+        return json.dumps({
+            'driver_id': self.driver_id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'patronymic': self.patronymic,  
+            'license_number': self.license_number
+        }, ensure_ascii=False, indent=4)
+        
+    @classmethod
+    def create_from_yaml(cls, yaml_string: str):
+        data = yaml.safe_load(yaml_string)
+        return cls(
+            driver_id=data.get('driver_id'),
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            patronymic=data.get('patronymic', ''),
+            license_number=data['license_number']
+        )
+        
+    def to_yaml(self) -> str:
+        return yaml.dump({
+            'driver_id': self.driver_id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'patronymic': self.patronymic,  
+            'license_number': self.license_number
+        }, allow_unicode=True)
+    def to_dict(self) -> dict:
+        return {
+            'driver_id': self.driver_id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'patronymic': self.patronymic,  
+            'license_number': self.license_number
+        }
+
     def __eq__(self, other):
         if not isinstance(other, BaseDriver):
-            return NotImplemented
-        return (self.driver_id == other.driver_id and
-                self.license_number == other.license_number)
+            return False
         return (self.license_number == other.license_number)
 
     def short_description(self):
