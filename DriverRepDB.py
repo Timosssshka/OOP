@@ -1,11 +1,9 @@
 class DriverRepDB:
-    """Класс для работы с базой данных и манипуляций с объектами."""
     
     def __init__(self, host, user, password, database, port=3306):
         self.db_connection = DBConnection(host, user, password, database, port)
     
     def get_by_id(self, driver_id: int) -> dict:
-        """Получить объект по ID."""
         conn = self.db_connection.get_connection()
         with conn.cursor() as cursor:
             cursor.execute("SELECT * FROM drivers WHERE id = %s", (driver_id,))
@@ -15,7 +13,6 @@ class DriverRepDB:
             return dict(driver)
     
     def get_k_n_short_list(self, k: int, n: int):
-        """Получить список k по счету n объектов """
         offset = (n - 1) * k
         conn = self.db_connection.get_connection()
         with conn.cursor() as cursor:
@@ -23,19 +20,25 @@ class DriverRepDB:
             return [dict(row) for row in cursor.fetchall()]
     
     def add_driver(self, driver: Driver):
-        """Добавить объект в базу данных (сгенерировать новый ID)."""
         conn = self.db_connection.get_connection()
-        with conn.cursor() as cursor:
-            cursor.execute(
-                "INSERT INTO drivers (first_name, last_name, patronymic, license_number) VALUES (%s, %s, %s, %s) RETURNING id",
-                (driver['first_name'], driver['last_name'], driver['patronymic'], driver['license_number'])
-            )
-            driver_id = cursor.fetchone()[0]
-            conn.commit()
-            return driver_id
+        try:
+            query = """
+                INSERT INTO drivers (first_name, last_name, patronymic, license_number) VALUES (%s, %s, %s, %s)
+            """
+            values = (driver.first_name, driver.last_name, driver.patronymic, driver.license_number)
+            with conn.cursor() as cursor:
+                cursor.execute(query, values)
+                conn.commit()
+                driver.driver_id = cursor.lastrowid
+            self.notify_observers()
+
+        except MySQLError as e:
+            if e.args[0] == 1062:
+                raise ValueError(f"Водитель с удостоверением {driver.license_number} уже существует.")
+            else:
+                raise Exception("При добавлении водителя произошла непредвиденная ошибка.")
     
     def replace_by_id(self, driver_id: int, new_driver: dict):
-        """Заменить элемент списка по ID."""
         valid_keys = {"first_name", "last_name", "patronymic", "license_number"}
         updates = {k: v for k, v in updates.items() if k in valid_keys}
         if not updates:
@@ -49,14 +52,12 @@ class DriverRepDB:
             conn.commit()
     
     def delete_by_id(self, driver_id: int):
-        """Удалить элемент списка по ID."""
         conn = self.db_connection.get_connection()
         with conn.cursor() as cursor:
             cursor.execute("DELETE FROM drivers WHERE id = %s", (driver_id,))
             conn.commit()
     
     def get_count(self) -> int:
-        """Получить количество элементов в базе данных."""
         conn = self.db_connection.get_connection()
         with conn.cursor() as cursor:
             cursor.execute("SELECT COUNT(*) FROM drivers")
