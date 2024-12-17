@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 class DriverStrategy(ABC):
-    """Интерфейс стратегии для работы с хранилищем данных."""
 
     @abstractmethod
     def read(self):
