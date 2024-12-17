@@ -4,9 +4,6 @@ import json
 
 class BaseDriver:
     def __init__(self,  last_name: str, first_name: str, patronymic: str, license_number: str, driver_id: int = None):
-        """
-        Базовый класс для водителя с общими атрибутами и методами.
-        """
         self.last_name = last_name
         self.first_name = first_name
         self.patronymic = patronymic
@@ -199,17 +196,10 @@ class Driver(BaseDriver):
 
 class DriverShort(BaseDriver):
     def __init__(self, driver: Driver):
-        """
-        Инициализирует объект DriverShort на основе объекта Driver.
-        """
         super().__init__(driver.last_name, driver.first_name, driver.patronymic, driver.license_number)
 
     @classmethod
     def from_driver(cls, driver: Driver):
-        """
-        Создание объекта DriverShort из объекта Driver.
-        Формат имени: "Фамилия И.О."
-        """
         if not isinstance(driver, Driver):
             raise TypeError("Аргумент должен быть объектом класса Driver.")
         return cls(
@@ -221,9 +211,6 @@ class DriverShort(BaseDriver):
         )
 
     def get_brief_name(self):
-        """
-        Возвращает фамилию и инициалы в формате "Фамилия И.О."
-        """
         first_initial = f"{self.first_name[0]}." if self.first_name else ""
         patronymic_initial = f"{self.patronymic[0]}." if self.patronymic else ""
         return f"{self.last_name} {first_initial}{patronymic_initial}"
