@@ -48,16 +48,15 @@ class DriverRepository:
         driver = self.get_by_id(driver_id)
         if not driver:
             raise ValueError(f"Водитель с ID {driver_id} не найден.")
-        drivers = [Driver.create_from_dict(driver) for driver in self._data]
-        if first_name:
+        if driver.first_name:
             driver.first_name = driver.first_name
-        if last_name:
+        if driver.last_name:
             driver.last_name = driver.last_name
-        if patronymic:
+        if driver.patronymic:
             driver.patronymic = driver.patronymic
-        if experience:
+        if driver.experience:
             driver.experience = driver.experience
-        if license_number:
+        if driver.license_number:
             driver.license_number = driver.license_number
         for i, p in enumerate(self.data):
             if p['driver_id'] == driver_id:
