@@ -1,8 +1,7 @@
 import yaml
 import os
-from DriverRepository import DriverRepository
 
-class DriverRepYaml(DriverStrategy):
+class DriverRepYaml
     def __init__(self, yamlFile):
         self.yamlFile = yamlFile
 
