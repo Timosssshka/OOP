@@ -1,7 +1,7 @@
 import json
 import os
-
-class DriverRepJson:
+from DriverStrategy import DriverStrategy
+class DriverRepJson(DriverStrategy):
      def __init__(self,json_file):
         self.json_file = json_file
 
