@@ -44,24 +44,25 @@ class DriverRepository:
             raise ValueError(f"Водитель с ID {driver_id} не найден.")
         self.data = [p for p in self.data if p['driver_id'] != driver_id]
       
-    def replace_by_id(self, driver_id: int, driver : Driver):
-        driver = self.get_by_id(driver_id)
-        if not driver:
-            raise ValueError(f"Водитель с ID {driver_id} не найден.")
-        if driver.first_name:
-            driver.first_name = driver.first_name
-        if driver.last_name:
-            driver.last_name = driver.last_name
-        if driver.patronymic:
-            driver.patronymic = driver.patronymic
-        if driver.experience:
-            driver.experience = driver.experience
-        if driver.license_number:
-            driver.license_number = driver.license_number
-        for i, p in enumerate(self.data):
-            if p['driver_id'] == driver_id:
-                self.data[i] = driver.to_dict()
-                break
+def replace_by_id(self, driver_id: int, driver: Driver):
+    current_driver = self.get_by_id(driver_id)
+    if not current_driver:
+        raise ValueError(f"Водитель с ID {driver_id} не найден.")
+    if driver.first_name:
+        current_driver.first_name = driver.first_name
+    if driver.last_name:
+        current_driver.last_name = driver.last_name
+    if driver.patronymic:
+        current_driver.patronymic = driver.patronymic
+    if driver.experience:
+        current_driver.experience = driver.experience
+    if driver.license_number:
+        current_driver.license_number = driver.license_number
+    for i, p in enumerate(self.data):
+        if p['driver_id'] == driver_id:
+            self.data[i] = current_driver.to_dict()
+            break
+
       
     def get_k_n_short_list(self, k: int, n: int) -> list[DriverShort]:
         start_index = (n - 1) * k
